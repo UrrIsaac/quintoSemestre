@@ -193,3 +193,23 @@ añadiremos uno al contador para pasar al siguiente caracter|#
 
 Sólo invirtiendo la lista para ir añadiendo uno de cada una
 |#
+
+
+; EJERCICIO 8
+;; zigzag-sum : list -> Number
+; ejemplo : 
+; (zigzag-sum ’(1 2 3 4 5))  > 1 - 2 + 3 - 4 + 5 = 3
+
+; la funcion requiere de una funcion auxiliar, esta se le aplica a la lista junto con un valor true 
+(define (zigzag-sum lst)
+  (zigzag-sum-recursion lst #t))
+
+
+;; zigzag-sum-recursion : list Boolean -> Number
+; Esta funcion utiliza recursion
+(define (zigzag-sum-recursion lst inicio)
+  (if (empty? lst) ; preguntamos si la lista es vacia
+      0 ; Caso base, si es cierto entonces regresamos 0
+      (if (equal? inicio #true) ; Preguntamos si el inicio es true, esto siempre sera cierto ya que en zigzag-sum damos el valor #t, esto ya que siempre empezaremos con una suma
+          (+ (first lst) (zigzag-sum-recursion (rest lst) #f)) ; si es cierto entonces sumamos el primer elemento de la lista con la funcion zigzag-sum-recursion que recibe la lista sin el primer elemento y un #f( el #f es para asegurar que la siguiente operacion sea resta)
+          (- (zigzag-sum-recursion (rest lst) #t) (first lst))))) ; en caso contrario, restamos la funcion zigzag-sum-recursion que recibe la lista sin el primer elemento y un #t( el #t es para asegurar que la siguiente operacion sea suma) con el primer elemento de la lista
