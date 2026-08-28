@@ -54,6 +54,50 @@ ALUMNOS :
             (string-a-lista-recursion cadena (+ posicion 1)))))
 
 
+; EJERCICIO 2
+;; triangulo-valido? : Number Number Number - > Boolean
+; ejemplo :
+; (triangulo-valido? 3 4 5)	#t
+
+;La funcion ocupa un cond que reisa todas las condiciones que debe tener 
+
+(define (triangulo-valido? lado1 lado2 lado3)
+	(cond
+	  [(or (or (<= lado1 0) (<= lado2 0)) (<= lado3 0)) #f] ; Primero vemos si el lado 1 o el lado 2, o el lado 3 son menosres o iguales a 0, si alguno se cumple regresamos false
+	  [(<= (+ lado1 lado2) lado3) #f] ; Si la suma del lado 1 con el lado 2 es menor o igual que el lado 3 regresamos false
+	  [(<= (+ lado1 lado3) lado2) #f] ; Si la suma del lado 1 con el lado 3 es menor o igual que el lado 2 regresamos false
+	  [(<= (+ lado2 lado3) lado1) #f] ; Si la suma del lado 2 con el lado 3 es menor o igual que el lado 1 regresamos false
+	  [else #t])) ; Si no cumple alguno de los casos anteriores significa que es valido y regresamos true
+
+
+; EJERCICIO 3
+;; letras-repetidas? : String -> Boolean
+; ejemplo :
+; (letras-repetidas? "hola") #f
+
+; Ocupamos una funcion auxiliar llamada letras-repetidas-aux?
+(define (letras-repetidas? s)
+  (letras-repetidas-aux? (string-a-lista s))) ; Ocupamos la funcion string-a-lista del ejercicio 1
+
+;; letras-repetidas-aux? : List<Char> -> Boolean
+; Esta funcion ocupa recursion para ver si existe alguna letra repetida 
+(define (letras-repetidas-aux? lista)
+  (if (empty? lista) ; preguntamos si la lista esta vacia 
+      #f ; Caso base, en caso de ser cierto regresamos false 
+      (if (contiene? (first lista) (rest lista)) ; preguntamos con una funcion auxiliar si la lista contiene el primer elemnto de la lista en el resto de la lista
+          #t ; caso base 2, de ser cierto regresamos true
+          (letras-repetidas-aux? (rest lista))))) ; Caso recursivo, en caso contrario aplicamos la funcion letras-repetidas-aux? a la lista sin el primer elemento
+
+
+;; contiene? : Char List<Char> -> Boolean
+; Esta funcion verifica si un caracter esta en una lista 
+(define (contiene? caracter lista)
+  (if (empty? lista) ; Preguntamos si la lista es vacia 
+      #f ; Caso base; de ser cierrto regresamos #f
+      (if (char=? caracter (first lista)) ; preguntamos si el caracter es el mismo que el primero de la lista
+          #t ; Caso base 2, de ser cierto regresamos true
+          (contiene? caracter (rest lista))))) ; Caso recursivo, aplicamos contiene? a el caracter que buscamos con la lista sin el primer elemento
+
 
 
 ; EJERCICIO 4
