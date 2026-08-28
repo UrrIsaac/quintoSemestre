@@ -6,6 +6,56 @@ ALUMNOS :
    Urrutia Alfaro Isaac Arturo
 |#
 
+; EJERCICIO 1
+;; password-aceptable? : String -> Boolean
+; ; ejemplo :
+; (password-aceptable? "Racket2027")   #t
+
+; La funcion trabaja con un cond, primero verificamos si tiene menos de 8 caracteres, si no tiene número (usa una funcion auxiliar) y si no tiene mayuscula (con otra funcion auxiliar), en cualquier caso ocupamos la funcion string-a-lista y despues si es cierta alguna regresa #f, en otro caso #t
+
+(define (password-aceptable? contraseña)
+	(cond
+	  [(< (string-length contraseña) 8) #f]
+	  [(not (tiene-numero? (string-a-lista contraseña))) #f]
+	  [(not (tiene-mayuscula? (string-a-lista contraseña))) #f]
+	  [else #t]))
+
+
+;; tiene-numero? : List -> Boolean
+; Ocupamos recursión recorriendo la lista 
+(define (tiene-numero? cadena)
+  (if (empty? cadena)
+      #f ; Caso base, si es vacia regresamos false
+      (if (char-numeric? (first cadena)) ; preguntamos si el primer elemento de la lista es un numero 
+                        #t ; Caso base 2, regresamos true si es cierto
+                        (tiene-numero? (rest cadena))))) ; Caso rescursivo, en caso  contrario aplicamos tiene-numero? a el resto de la lista 
+
+;; tiene-mayuscula? : List -> Boolean
+; Ocupamos recursion recorriendo la lista
+(define (tiene-mayuscula? cadena)
+  (if (empty? cadena)
+      #f ; Caso base, si es vacia regresamos false
+      (if (char-upper-case? (first cadena)) ; preguntamos si el primer elemento es una mayuscula
+                           #t ; Caso base 2, si es cierto regresamos true
+                           (tiene-mayuscula? (rest cadena))))) ; Caso recursivo, en caso contrario aplicamos la funcion tiene-mayuscula al resto de la lista
+
+
+;; string-a-lista : String -> list
+; Esta funcion toma un String y lo convierte en una lista ocupando otra funcion y con el indice 0
+(define (string-a-lista cadena)
+  (string-a-lista-recursion cadena 0))
+
+;; string-a-lista-recursion : String Number -> list
+; Esta funcion hace la recursion que ocupa la funcion string-a-lista
+(define (string-a-lista-recursion cadena posicion)
+  (if (= posicion (string-length cadena)) ; vamos si la posicion es igual a la longitud de la cadena
+      '() ; caso base, de ser cierto regresamos la lista vacia 
+      (cons (string-ref cadena posicion) ; caso recursivo, en caso contrario unimos la lista que contiene el elemento de la cadena de la posicion donde estemos con la lista que le aplica la funcion string-a-lista-recursion a la posicion actual mas 1.
+            (string-a-lista-recursion cadena (+ posicion 1)))))
+
+
+
+
 ; EJERCICIO 4
 ;; anagrama-profundo ? : string string - > boolean
 ; ejemplo :
