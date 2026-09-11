@@ -6,6 +6,40 @@ ALUMNOS :
    Urrutia Alfaro Isaac Arturo 322287879
 |#
 
+; PARTE 2.1 FUNCIONES DE ORDEN SUPERIOR Y FUNCIONES ANÓNIMAS
+
+; EJERCICIO 1
+;; filtra-rango :
+;; number number ( listof number ) - > ( listof number )
+
+(define (filtra-rango a b list)
+  (filter
+   (lambda (x)
+     (and (>= x a) (<= x b))) list)) ; revisamos de cada elemento de la lista que sea mayor a "a" y menor que "b" 
+
+; EJERCICIO 2
+;; cuenta-si :
+;; (A - > boolean ) ( listof A) - > integer
+
+(define (cuenta-si p? list)
+  (foldl (lambda (x acumulador) ; el fold es desde la izquierda 
+           (if (p? x)
+               (+ 1 acumulador)
+               acumulador)) 0 list)) ; preguntamos para cada elemento si cumple con p?, en caso de que si sumamos 1 a un acumulador inciado en 0
+
+; EJERCICIO 3
+; suma-transformados :
+;; ( number - > number )
+;; ( listof number ) - > number
+
+(define (suma-transformados f list)
+  (if (empty? list) ; hacemos un caso recursivo
+      0 ; caso base, si la lista es vacia sumamos 0
+      (foldl + 0
+         (map (lambda (x)
+                (f x)) list)))) ; el foldl recibe la funcion suma y se inicia en 0, con un map le aplicaremos a cada elemento de la lista a funcion f, los resultados se sumaran por el foldl 
+
+
 ; PARTE 2.2 TIPO DE DATOS ABSTRACTOS
 
 ; Estructuras definidas en la práctica
