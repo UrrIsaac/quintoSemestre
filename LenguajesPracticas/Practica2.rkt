@@ -48,7 +48,6 @@ ALUMNOS :
 ( struct evento ( tipo equipo jugador minuto ) #:transparent )
 
 ; Estructuras definidas en el laboratorio
-
 ( struct partido
    ( local
      visitante
@@ -76,11 +75,10 @@ ALUMNOS :
 
 ; EJERCICIO 6
 ;; avanzar-minuto : partido natural - > partido
-
 ( define ( avanzar-minuto p minutos )
    (cond
-     [(< minutos 1) (error 'avanzar-minuto "Los minutos debes ser positivos") ]
-     [(partido-finalizado p) (error 'avanzar-minuto "Partido finalizado") ]
+     [(< minutos 1) (error 'avanzar-minuto "Los minutos debes ser positivos") ] ;no puede haber añadidura de minutos negativos y sumar 0 no tiene sentido
+     [(partido-finalizado p) (error 'avanzar-minuto "Partido finalizado") ] ;no se puede añadir minutos a un partido finalizado
      [ (if (hay-tiempo (partido-minuto p)  minutos)
            ;sí hay tiempo, osea se sí se puede sumar
            (partido
@@ -110,7 +108,7 @@ ALUMNOS :
 ; funcion auxiliar de avanzar-minuto
 ; hay-tiempo natural natural -> booleano
 (define (hay-tiempo actuales n)
-  (if (>= n (- 90 actuales))
+  (if (>= n (- 90 actuales))  ;checa si lo que le queremos sumar supera los minutos restantes del partido
       #f
       #t
       )
@@ -122,11 +120,11 @@ ALUMNOS :
 ( define ( registrar-gol p lado nombre-jugador )
    (cond
      [(partido-finalizado p)
-      (error 'registrar-gol "El partido está finalizado") ]
+      (error 'registrar-gol "El partido está finalizado") ]  ;no podemos en un partido finalizado
      [(not (or (symbol=? lado 'local) (symbol=? lado 'visitante) ))
-      (error 'registrar-gol "El simbolo del equipo debe ser 'local o 'visitante") ]
+      (error 'registrar-gol "El simbolo del equipo debe ser 'local o 'visitante") ] ;checamos si el símbolo del equipo es correcto
      [(not (pertenece-equipo p lado nombre-jugador) )
-      (error 'registrar-gol "El jugador no pertenece a ese equipo") ]
+      (error 'registrar-gol "El jugador no pertenece a ese equipo") ] ;checamos si el jugador sí es de ese equipo.
      [else (if (symbol=? lado 'local)
                ;gol del local
                (partido
@@ -154,24 +152,25 @@ ALUMNOS :
    )
 
 
-;; Función auxiliar recursiva para buscar al jugador por su nombre
+; Función auxiliar recursiva para buscar al jugador por su nombre en la lista
+;; busca-jugador? : symbol list -> boolean
 (define (busca-jugador? nombre lista-jugadores)
   (cond
     [(empty? lista-jugadores) #f]
     [(symbol=? nombre (jugador-nombre (first lista-jugadores))) #t]
     [else (busca-jugador? nombre (rest lista-jugadores))]))
 
-;; Función pertenece-equipo actualizada sin usar let ni ormap
+; Función auxiliar para ver si pertenece a una equipo
+;;pertenece-equipo : partido symbol symbol
 (define (pertenece-equipo ptd lado-jugador nom-jugador)
   (if (symbol=? lado-jugador 'local)
-      (busca-jugador? nom-jugador (equipo-jugadores (partido-local ptd)))
+      (busca-jugador? nom-jugador (equipo-jugadores (partido-local ptd))) ; mando a llamar busca-jugador con las listas de ambos equipos
       (busca-jugador? nom-jugador (equipo-jugadores (partido-visitante ptd)))))
 
 
 
 ; EJERCICIO 8
 ;; buscar-jugadores : partido ( jugador - > boolean ) - > ( listof jugador )
-
 ( define ( buscar-jugadores p pred )
    (append (filter pred (equipo-jugadores (partido-local p)))
          (filter pred (equipo-jugadores (partido-visitante p))) )
@@ -179,13 +178,13 @@ ALUMNOS :
    )
 
 
+; PUNTOS EXTRAS
 
 
 
 
 
-
-; extra?
+; EJERCICIO 10
 (define (probar-partido)
   (define j1 (jugador 'carlos 10 'delantero))
   (define j2 (jugador 'ana 8 'medio))
@@ -206,72 +205,4 @@ ALUMNOS :
   
   p-final)
 
-
-;(probar-partido)
-
-
-
-; EJEMPLOS PARA PROBAR, QUITAR ANTES DE ENTREGAAAAAAR 
-; ---------------------------------------------------------------------------
-( define equipo-rojo
-( equipo 'rojos
-( list
-( jugador 'memo 9 'delantero )
-( jugador 'ana 10 'medio )
-( jugador 'luis 1 'portero ) ) ) )
-
-( define equipo-azul
-( equipo 'azules
-( list
-( jugador 'memo2 9 'delantero )
-( jugador 'ana2 10 'medio )
-( jugador 'luis2 1 'portero ) ) ) )
-
-(define partido1
-( crear-partido equipo-rojo equipo-azul ) )
-
-( define partido2
-( avanzar-minuto partido1 25) )
-
-
-( partido-minuto partido2 )
-( partido-finalizado partido2 )
-
-( define partido-final
-( avanzar-minuto partido2 70) )
-
-( partido-minuto partido-final )
-( partido-finalizado partido-final )
-
-
-
-
-;; Continuación con las pruebas para registrar-gol
-
-(define partido3 (registrar-gol partido2 'local 'memo))
-
-(partido-goles-local partido3)
-;; Resultado esperado: 1
-
-(partido-goles-visitante partido3)
-;; Resultado esperado: 0
-
-(first (partido-eventos partido3))
-;; Resultado esperado: (evento 'gol 'local 'memo 25)
-
-;; Prueba de error: Jugador inexistente
-;(registrar-gol partido3 'visitante 'jugador-inexistente)
-;; Resultado esperado: Error en registrar-gol: El jugador no pertenece a ese equipo
-
-;; Prueba de error: Lado incorrecto
-;(registrar-gol partido3 'invalido 'memo)
-;; Resultado esperado: Error en registrar-gol: El simbolo del equipo debe ser 'local o 'visitante
-
-
-(buscar-jugadores
- partido1
- (lambda (j)
-   (symbol=? (jugador-posicion j)
-             'portero)))
-
-
+(probar-partido)
