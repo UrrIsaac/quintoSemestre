@@ -180,8 +180,18 @@ ALUMNOS :
 
 ; PUNTOS EXTRAS
 
+; EJERCICIO 9
 
-
+;; resultado-partido : partido - > symbol
+( define ( resultado-partido p )
+   (cond
+     [(not (partido-finalizado p))
+      (error 'resultado-partido "El partido no ha finalizado") ]
+     [(> (partido-goles-local p) (partido-goles-visitante p)) 'gana-local ]
+     [(> (partido-goles-visitante p) (partido-goles-local p)) 'gana-visitante ]
+     [else 'empate ]
+     )
+   )
 
 
 ; EJERCICIO 10
