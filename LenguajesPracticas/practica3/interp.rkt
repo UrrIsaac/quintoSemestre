@@ -8,35 +8,24 @@ ALUMNOS :
 |#
 
 (require "parser.rkt")
-
-; ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; ------------------------------------------------------------------------------------------------
 ; SUBST
-; 
-; Ideas generales
-;   - id: si es el mismo símbolo que sub-id, se cambia por val; si no, igual.
-;   - num/bool: se regresan tal cual, no tienen variables.
-;   - op: se sustituye en cada uno de sus argumentos.
-;   - with: los VALUES de los bindings siempre están "afuera" del with, así que
-;           siempre se sustituyen. Los IDs que declara el with son los que se
-;           pueden sombrear: si sub-id aparece entre esos ids, el body ya no se toca.
-;   - with*: aquí sí importa el orden. Vamos de izquierda a derecha sustituyendo
-;            en cada value; en cuanto un binding declara el mismo id que sub-id,
-;            ese id sombrea a partir de ahí (los bindings siguientes y el body
-;            ya no se sustituyen).
 
 ;; subst : WAE+ symbol WAE+ -> WAE+
 (define (subst expr sub-id val)
   (type-case WAE+ expr
-    [id (i) (if (symbol=? i sub-id) val expr)]
+    [id (i) (if (symbol=? i sub-id) val expr)] ;si es el mismo símbolo que sub-id, se cambia por val; si no, igual.
     [num (n) expr]
     [bool (b) expr]
-    [op (f args) (op f (map (lambda (a) (subst a sub-id val)) args))]
+    [op (f args) (op f (map (lambda (a) (subst a sub-id val)) args))] ; se sustituye en cada uno de sus argumentos.
+    ;los VALUES de los bindings siempre están "afuera" del with, así que siempre se sustituyen.
+    ; Los IDs que declara el with son los que se pueden sombrear: si sub-id aparece entre esos ids, el body ya no se toca.
     [with (bindings body)
           (with (subst-bindings-with bindings sub-id val)
                 (if (memq sub-id (map binding-id bindings))
                     body ; sombreado, el body no se toca
                     (subst body sub-id val)))]
-    [with* (bindings body)
+    [with* (bindings body) ; aquí sí importa el orden. 
            (subst-with-asterisco bindings body sub-id val)]))
 
 ;FUNCION AUXILIAR DE WITH
@@ -72,10 +61,10 @@ ALUMNOS :
            (values (cons nuevo-b resto) sombreado?)))]))
 
 
-; ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; ---------------------------------------------------------
 ; INTERP
 ;
-; Estrategia glotona: primero se evalúa la expresión del binding (con interp,
+; Valuación glotona: primero se evalúa la expresión del binding (con interp,
 ; obteniendo un número o booleano de racket), luego ese valor se convierte de
 ; vuelta a WAE+ (num/bool) y se sustituye con subst.
 
@@ -128,3 +117,4 @@ ALUMNOS :
   (type-case WAE+ sustituido
     [with* (bindings2 body2) (interp-with-asterisco bindings2 body2)]
     [else sustituido]))
+
